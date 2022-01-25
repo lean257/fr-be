@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "farmraise backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm run tests",
+    "start": "nodemon server.js"
+  },
+  "author": "An Le",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
+    "sqlite": "^4.0.23",
+    "sqlite3": "^5.0.2"
+  }
+}
