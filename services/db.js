@@ -42,10 +42,6 @@ db.run(sql_create_accounts, (err) => {
     return;
   }
   console.log("successfully create accounts table");
-  // index customer_id & balance
-  const sql_query = `
-  CREATE UNIQUE INDEX idx_customer_id ON accounts(customer_id);
-  CREATE UNIQUE INDEX idx_balance ON accounts(balance);`;
 });
 // transfer table records details of the transfer
 // movement table records money in and out of a particular account
