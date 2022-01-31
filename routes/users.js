@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const users = require("../services/users");
+const db = require("../services/db");
 
 // get user by id
 router.get("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  var sql = "select * from customers where id = ?";
+  var params = [req.params.id];
+  db.get(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
     res.json({
-      message: `successfully retreived user ${id}`,
-      data: users.getUserById(id),
+      message: "success",
+      data: row,
     });
-  } catch (err) {
-    console.error("error retrieving user " + err.message);
-    next(err);
-  }
+  });
 });
 module.exports = router;

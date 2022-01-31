@@ -4,16 +4,20 @@
   "description": "farmraise backend",
   "main": "server.js",
   "scripts": {
-    "test": "npm run tests",
+    "test": "jest",
     "start": "nodemon server.js"
   },
   "author": "An Le",
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "^7.5.0",
     "express": "^4.17.2",
-    "nodemon": "^2.0.15",
-    "sqlite": "^4.0.23",
+    "jest": "^27.4.7",
     "sqlite3": "^5.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^9.2.0",
+    "supertest": "^6.2.2",
+    "nodemon": "^2.0.15"
   }
 }

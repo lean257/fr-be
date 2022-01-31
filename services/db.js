@@ -1,6 +1,3 @@
-const sqlite = require("better-sqlite3");
-const path = require("path");
-// const db = new sqlite(path.resolve("db.sqlite3"), { fileMustExist: true });
 const sqlite3 = require("sqlite3").verbose();
 const DBSOURCE = "db.sqlite3";
 const {
@@ -24,10 +21,6 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
   }
 });
 
-function run(sql, params) {
-  return db.run(sql, params);
-}
-
 // create and seed customers table
 db.run(sql_create_customers, (err) => {
   if (err) {
@@ -36,7 +29,7 @@ db.run(sql_create_customers, (err) => {
   console.log("Successful creation of the 'Customers' table");
   // seed customers DB after table created
   const sql_insert = `INSERT INTO customers (name) VALUES ('Arisha Barron'),('Branden Gibson'),('Rhonda Church'),('Georgina Hazel')`;
-  db.run(sql_insert, (err) => {
+  db.run(sql_insert, async (err) => {
     if (err) {
       console.log("problems inserting new customers " + err.message);
       return;
@@ -104,6 +97,4 @@ db.run(trigger4, (err) => {
   }
   console.log("successfully run trigger1");
 });
-module.exports = {
-  run,
-};
+module.exports = db;
