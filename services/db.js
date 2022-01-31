@@ -49,9 +49,7 @@ db.run(sql_create_accounts, (err) => {
 db.serialize(() => {
   db.run(sql_create_movement);
   db.run(sql_create_transfer);
-  db.run(trigger_update_balance, (err) => {
-    console.log("trigger ran");
-  });
+  db.run(trigger_update_balance);
 });
 
 module.exports = db;

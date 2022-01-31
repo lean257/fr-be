@@ -36,7 +36,7 @@ const sql_create_movement = `
 // trigger to update balance in accounts
 // after every insert in movement
 const trigger_update_balance = `
-create trigger new_balance after insert on movement
+create trigger IF NOT EXISTS new_balance after insert on movement
 begin
 update accounts set balance = balance + new.amount
 where id = new.account_id;

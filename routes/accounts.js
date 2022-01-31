@@ -9,6 +9,7 @@ router.post("/", async (req, res, next) => {
     let { customer_id, deposit } = req.body;
 
     // update accounts table
+    // TODO: should check if customer_id exists? Or if not exists, assume not customer of the bank
     db.run(
       `INSERT INTO accounts (date_opened, customer_id, initial_balance, balance) VALUES
         (${Date.now()}, ${customer_id}, ${deposit}, ${deposit})
@@ -18,10 +19,11 @@ router.post("/", async (req, res, next) => {
           console.log(err);
           next(err);
         }
-        console.log(customer_id, deposit);
         // send confirmation
         res.send({
-          [`customer ${customer_id}`]: deposit,
+          customer: customer_id,
+          initial_balance: deposit,
+          balance: deposit,
           id: this.lastID,
         });
       }
@@ -76,6 +78,10 @@ router.post("/transfer", async (req, res, next) => {
           );
           res.send({
             message: "transfer success",
+            transfer_id: transfer_id,
+            from_id: from_id,
+            to_id: to_id,
+            amount: amount,
           });
         }
       }
