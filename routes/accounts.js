@@ -1,24 +1,31 @@
 const express = require("express");
 const router = express.Router();
+const db = require("../services/db");
 
 // create new bank accounts
-router.post("/accounts", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     // grab user, initial deposit amount from the body
     let { customer_id, deposit } = req.body;
 
     // update accounts table
     db.run(
-      `INSERT INTO accounts (date_opened, customer_id, initial_balance) VALUES (?,?,?)
+      `INSERT INTO accounts (date_opened, customer_id, initial_balance, balance) VALUES
+        (${Date.now()}, ${customer_id}, ${deposit}, ${deposit})
         `,
-      [Date.now(), customer_id, deposit]
+      function (err) {
+        if (err) {
+          console.log(err);
+          next(err);
+        }
+        console.log(customer_id, deposit);
+        // send confirmation
+        res.send({
+          [`customer ${customer_id}`]: deposit,
+          id: this.lastID,
+        });
+      }
     );
-    const account_id = db.run(`SELECT last_insert_rowid()`);
-
-    // send confirmation
-    res.json({
-      message: `account created successfully for customer ${customer_id}`,
-    });
   } catch (err) {
     console.error("error creating new account: " + err.message);
     next(err);
@@ -26,50 +33,76 @@ router.post("/accounts", async (req, res, next) => {
 });
 
 // retrieve balance for a given account
-router.get("/accounts/:id/balance", async (req, res, next) => {
-  db.run(`SELECT current_balance from movement where account_id = ?`, [
-    req.params.id,
-  ]);
-  // send confirmation
-  res.json({
-    message: `account created successfully for customer ${customer_id}`,
-  });
+router.get("/:id/balance", async (req, res, next) => {
+  db.get(
+    `SELECT balance from accounts where id = ?`,
+    [req.params.id],
+    function (err, result) {
+      if (err) {
+        next(err);
+      } else {
+        res.send({ balance: result.balance });
+      }
+    }
+  );
 });
+
 // transfer amounts bt any 2 accounts
-router.post("/accounts/transfer", async (req, res, next) => {
+router.post("/transfer", async (req, res, next) => {
   try {
     const { from_id, to_id, amount } = req.body;
     db.run(
       `
     INSERT INTO transfers (date, from_id, to_id, amount) VALUES (?, ?, ?, ?)
     `,
-      [Date.now(), from_id, to_id, amount]
-    );
-    const transer_id = db.run(`SELECT last_insert_rowid()`);
-    // record in movement table
-    db.run(
-      `
+      [Date.now(), from_id, to_id, amount],
+      function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          let transfer_id = this.lastID;
+          // record in movement table
+          db.run(
+            `
     INSERT INTO movement (date_of_transfer, account_id, amount, transfer_id) VALUES (?, ?, ?, ?)
     `,
-      [Date.now(), from_id, -amount, transfer_id]
-    );
-    db.run(
-      `
+            [Date.now(), from_id, -amount, transfer_id]
+          );
+          db.run(
+            `
     INSERT INTO movement (date_of_transfer, account_id, amount, transfer_id) VALUES (?, ?, ?, ?)
     `,
-      [Date.now(), to_id, amount, transfer_id]
+            [Date.now(), to_id, amount, transfer_id]
+          );
+          res.send({
+            message: "transfer success",
+          });
+        }
+      }
     );
-    res.send({
-      message: "transfer success",
-    });
   } catch (err) {
     next(err);
   }
 });
+
 // retrieve transfer history for a given account
-router.get("/accounts/:id/transfer", async (req, res) => {
-  const { id } = req.params.id;
-  // retrieve from DB
-  db.run(`SELECT * from movement where account_id = ${id}`);
+router.get("/:id/transfer-history", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // retrieve from movement table to get all transfer transactions
+    db.all(
+      `SELECT * from movement where account_id = ?`,
+      [id],
+      function (err, row) {
+        res.json({
+          message: "retrieved transfer history",
+          result: row,
+        });
+      }
+    );
+  } catch (err) {
+    next(err);
+  }
 });
+
 module.exports = router;

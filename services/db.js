@@ -5,10 +5,7 @@ const {
   sql_create_customers,
   sql_create_transfer,
   sql_create_movement,
-  trigger1,
-  trigger2,
-  trigger3,
-  trigger4,
+  trigger_update_balance,
 } = require("../dbprompts");
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
@@ -26,7 +23,7 @@ db.run(sql_create_customers, (err) => {
   if (err) {
     return console.error(err.message);
   }
-  console.log("Successful creation of the 'Customers' table");
+  console.log("Successfully created Customers table");
   // seed customers DB after table created
   const sql_insert = `INSERT INTO customers (name) VALUES ('Arisha Barron'),('Branden Gibson'),('Rhonda Church'),('Georgina Hazel')`;
   db.run(sql_insert, async (err) => {
@@ -44,57 +41,21 @@ db.run(sql_create_accounts, (err) => {
     console.log("problems creating accounts table " + err.message);
     return;
   }
-  console.log("successfully inserted accounts");
+  console.log("successfully create accounts table");
   // index customer_id & balance
   const sql_query = `
   CREATE UNIQUE INDEX idx_customer_id ON accounts(customer_id);
   CREATE UNIQUE INDEX idx_balance ON accounts(balance);`;
 });
 // transfer table records details of the transfer
-db.run(sql_create_transfer, (err) => {
-  if (err) {
-    console.log("problems creating transfer table " + err.message);
-    return;
-  }
-  console.log("successfully created transfer table");
-});
-
 // movement table records money in and out of a particular account
-db.run(sql_create_movement, (err) => {
-  if (err) {
-    console.log("problems creating movement table " + err.message);
-    return;
-  }
-  console.log("successfully created movement");
-});
 // triggers to update balance on changes in movement
+db.serialize(() => {
+  db.run(sql_create_movement);
+  db.run(sql_create_transfer);
+  db.run(trigger_update_balance, (err) => {
+    console.log("trigger ran");
+  });
+});
 
-db.run(trigger1, (err) => {
-  if (err) {
-    console.log("running trigger1 " + err.message);
-    return;
-  }
-  console.log("successfully run trigger1");
-});
-db.run(trigger2, (err) => {
-  if (err) {
-    console.log("running trigger1 " + err.message);
-    return;
-  }
-  console.log("successfully run trigger1");
-});
-db.run(trigger3, (err) => {
-  if (err) {
-    console.log("running trigger1 " + err.message);
-    return;
-  }
-  console.log("successfully run trigger1");
-});
-db.run(trigger4, (err) => {
-  if (err) {
-    console.log("running trigger1 " + err.message);
-    return;
-  }
-  console.log("successfully run trigger1");
-});
 module.exports = db;
