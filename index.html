@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    Test this server
+  </head>
+  <body>
+    <h4>Create a bank account</h4>
+    <input
+      type="submit"
+      value="POST /api/accounts"
+      onclick="submitPostAccounts()"
+    />
+    <div id="post-accounts"></div>
+    <script type="text/javascript">
+      function submitPostAccounts() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            document.getElementById("post-accounts").innerText = xhr.response;
+          }
+        };
+        xhr.open("post", "https://fr-be.herokuapp.com/api/accounts", true);
+        xhr.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded; charset=UTF-8"
+        );
+        xhr.send({
+          customer_id: 1,
+          deposit: 1500,
+        });
+      }
+    </script>
+    <h4>GET balance</h4>
+    <input
+      type="submit"
+      value="GET /api/accounts/:1/balance"
+      onclick="submitGetBalance()"
+    />
+    <div id="get-balance"></div>
+    <script type="text/javascript">
+      function submitGetBalance() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            document.getElementById("get-balance").innerText = xhr.response;
+          }
+        };
+        xhr.open(
+          "get",
+          "https://fr-be.herokuapp.com/api/accounts/1/balance",
+          true
+        );
+        xhr.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded; charset=UTF-8"
+        );
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>

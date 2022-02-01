@@ -1,6 +1,6 @@
 # farmraise
 
-NodeJS server for banking admin tool
+NodeJS server for banking admin tool. Server is deployed [here](https://fr-be.herokuapp.com/).
 
 API Routes include:
 

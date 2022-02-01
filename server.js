@@ -5,9 +5,10 @@ const accountRouter = require("./routes/accounts");
 const userRouter = require("./routes/users");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+fs = require("fs");
 app.get("/", (req, res) => {
-  res.send("Welcome to my node server");
+  var data = fs.readFileSync("index.html").toString();
+  res.send(data);
 });
 app.use("/api/users", userRouter);
 app.use("/api/accounts", accountRouter);
