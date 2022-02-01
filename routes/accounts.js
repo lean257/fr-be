@@ -53,6 +53,21 @@ router.get("/:id/balance", async (req, res, next) => {
 router.post("/transfer", async (req, res, next) => {
   try {
     const { from_id, to_id, amount } = req.body;
+    // check if the account id exists, if not create the accounts
+    db.get(`select * from accounts where id=${from_id}`, (err, row) => {
+      if (row === undefined) {
+        db.run(`
+        INSERT INTO accounts (id, intial_balance) VALUES (${from_id}, 0)
+        `);
+      }
+    });
+    db.get(`select * from accounts where id=${to_id}`, (err, row) => {
+      if (row === undefined) {
+        db.run(`
+        INSERT INTO accounts (id, intial_balance) VALUES (${to_id}, 0)
+        `);
+      }
+    });
     db.run(
       `
     INSERT INTO transfers (date, from_id, to_id, amount) VALUES (?, ?, ?, ?)
@@ -110,5 +125,4 @@ router.get("/:id/transfer-history", async (req, res, next) => {
     next(err);
   }
 });
-
 module.exports = router;

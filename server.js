@@ -1,6 +1,11 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 8000;
+const port =
+  process.env.NODE_ENV === "test"
+    ? 8001
+    : process.env.PORT
+    ? process.env.PORT
+    : 8000;
 const accountRouter = require("./routes/accounts");
 const userRouter = require("./routes/users");
 app.use(express.urlencoded({ extended: true }));

@@ -20,20 +20,19 @@
           }
         };
         xhr.open("post", "https://fr-be.herokuapp.com/api/accounts", true);
-        xhr.setRequestHeader(
-          "Content-Type",
-          "application/x-www-form-urlencoded; charset=UTF-8"
+        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        xhr.send(
+          JSON.stringify({
+            customer_id: 1,
+            deposit: 1500,
+          })
         );
-        xhr.send({
-          customer_id: 1,
-          deposit: 1500,
-        });
       }
     </script>
     <h4>GET balance</h4>
     <input
       type="submit"
-      value="GET /api/accounts/:1/balance"
+      value="GET /api/accounts/1/balance"
       onclick="submitGetBalance()"
     />
     <div id="get-balance"></div>
@@ -50,10 +49,61 @@
           "https://fr-be.herokuapp.com/api/accounts/1/balance",
           true
         );
-        xhr.setRequestHeader(
-          "Content-Type",
-          "application/x-www-form-urlencoded; charset=UTF-8"
+        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        xhr.send();
+      }
+    </script>
+    <h4>POST transfer</h4>
+    <input
+      type="submit"
+      value="POST /api/accounts/transfer"
+      onclick="submitPostTransfer()"
+    />
+    <div id="post-transfer"></div>
+    <script type="text/javascript">
+      function submitPostTransfer() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            document.getElementById("post-transfer").innerText = xhr.response;
+          }
+        };
+        xhr.open(
+          "post",
+          "https://fr-be.herokuapp.com/api/accounts/transfer",
+          true
         );
+        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        xhr.send(
+          JSON.stringify({
+            from_id: 1,
+            to_id: 20,
+            amount: 100,
+          })
+        );
+      }
+    </script>
+    <h4>GET transfer history</h4>
+    <input
+      type="submit"
+      value="GET /api/accounts/1/transfer-history"
+      onclick="submitGetTransfer()"
+    />
+    <div id="get-transfer"></div>
+    <script type="text/javascript">
+      function submitGetTransfer() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            document.getElementById("get-transfer").innerText = xhr.response;
+          }
+        };
+        xhr.open(
+          "get",
+          "https://fr-be.herokuapp.com/api/accounts/1/transfer-history",
+          true
+        );
+        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
         xhr.send();
       }
     </script>
